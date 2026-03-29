@@ -1,0 +1,25 @@
+services:
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: authlab-backend
+    env_file:
+      - ./.env
+    volumes:
+      - backend_tmp:/app/tmp
+    expose:
+      - "8000"
+
+  gateway:
+    build:
+      context: .
+      dockerfile: deploy/gateway.Dockerfile
+    container_name: authlab-gateway
+    depends_on:
+      - backend
+    ports:
+      - "8080:80"
+
+volumes:
+  backend_tmp:
