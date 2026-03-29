@@ -1,0 +1,27 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>VeriLens Forensics Options</title>
+    <link rel="stylesheet" href="options.css" />
+  </head>
+  <body>
+    <main class="panel">
+      <h1>VeriLens Forensics</h1>
+      <p class="subtitle">Extension Backend Configuration</p>
+
+      <label for="backendUrl">Backend URL</label>
+      <input id="backendUrl" type="url" placeholder="https://ipcv-final.onrender.com" />
+
+      <div class="actions">
+        <button id="saveBtn">Save</button>
+        <button id="resetBtn" class="ghost">Reset to Default</button>
+      </div>
+
+      <p id="status" class="status"></p>
+    </main>
+
+    <script src="options.js"></script>
+  </body>
+</html>

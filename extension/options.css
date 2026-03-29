@@ -1,0 +1,78 @@
+:root {
+  --bg: #f5f2eb;
+  --card: #fffdf8;
+  --ink: #111114;
+  --muted: #55585f;
+  --line: #dbd4c5;
+  --accent: #1f7a8c;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: "Segoe UI", system-ui, sans-serif;
+  background: var(--bg);
+  color: var(--ink);
+}
+
+.panel {
+  max-width: 560px;
+  margin: 2rem auto;
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  padding: 1rem;
+}
+
+h1 {
+  margin: 0;
+}
+
+.subtitle {
+  margin-top: 0.35rem;
+  color: var(--muted);
+}
+
+label {
+  display: block;
+  margin: 1rem 0 0.3rem;
+  font-weight: 600;
+}
+
+input {
+  width: 100%;
+  padding: 0.65rem;
+  border-radius: 8px;
+  border: 1px solid var(--line);
+}
+
+.actions {
+  display: flex;
+  gap: 0.6rem;
+  margin-top: 0.9rem;
+}
+
+button {
+  border: none;
+  border-radius: 999px;
+  padding: 0.6rem 1rem;
+  font-weight: 700;
+  cursor: pointer;
+  background: var(--accent);
+  color: white;
+}
+
+button.ghost {
+  background: transparent;
+  color: var(--ink);
+  border: 1px solid var(--line);
+}
+
+.status {
+  margin-top: 0.8rem;
+  min-height: 20px;
+  color: var(--muted);
+}

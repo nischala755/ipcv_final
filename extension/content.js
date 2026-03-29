@@ -28,10 +28,24 @@ function renderCard({ title, text, bg = "#111", color = "#fff" }) {
   card.style.borderRadius = "12px";
   card.style.marginBottom = "10px";
   card.style.boxShadow = "0 10px 24px rgba(0,0,0,.2)";
-  card.innerHTML = `<strong>${title}</strong><div style="margin-top:6px;font-size:13px;line-height:1.35">${text}</div>`;
+  card.style.border = "1px solid rgba(255,255,255,.18)";
+  card.innerHTML = `<strong style="display:block;font-size:14px">${title}</strong><div style="margin-top:6px;font-size:13px;line-height:1.42">${text}</div>`;
   host.prepend(card);
 
-  setTimeout(() => card.remove(), 12000);
+  setTimeout(() => card.remove(), 18000);
+}
+
+function esc(text) {
+  return String(text || "")
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;");
+}
+
+function short(text, max = 280) {
+  const t = String(text || "").trim().replace(/\s+/g, " ");
+  if (t.length <= max) return t;
+  return `${t.slice(0, max - 1)}...`;
 }
 
 chrome.runtime.onMessage.addListener((msg) => {
@@ -42,13 +56,28 @@ chrome.runtime.onMessage.addListener((msg) => {
 
   if (msg.type === "AUTHLAB_RESULT") {
     const result = msg.payload.result;
-    const confidence = Math.round(result.confidence_fake * 100);
+    const confidence = (result.confidence_fake * 100).toFixed(1);
+    const trust = (result.trust_score * 100).toFixed(1);
+    const drift = (result.reality_drift_score * 100).toFixed(1);
     const top = [...result.factors].sort((a, b) => b.score - a.score).slice(0, 2);
-    const summary = top.map((f) => `${f.name}: ${Math.round(f.score * 100)}%`).join(" | ");
+    const summary = top.map((f) => `${f.name}: ${(f.score * 100).toFixed(1)}%`).join(" | ");
+    const beginner = short(result.explanation?.beginner || "Explanation unavailable.");
+    const policy = result.policy_decision?.action ? `Policy: ${result.policy_decision.action}` : "Policy: n/a";
+    const reportUrl = result.report_id ? `https://ipcv-final.onrender.com/reports/${result.report_id}.json` : "";
+
+    let text =
+      `${summary}<br/>` +
+      `Trust: ${trust}% | Reality Drift: ${drift}%<br/>` +
+      `${policy}<br/><br/>` +
+      `<em>${esc(beginner)}</em>`;
+
+    if (reportUrl) {
+      text += `<br/><br/><a href="${reportUrl}" target="_blank" rel="noreferrer" style="color:#fff;text-decoration:underline">Open forensic report</a>`;
+    }
 
     renderCard({
       title: `Deepfake Suspicion: ${confidence}%`,
-      text: `${summary}<br/>Reality Drift: ${Math.round(result.reality_drift_score * 100)}%`,
+      text,
       bg: scoreTone(result.confidence_fake),
     });
   }

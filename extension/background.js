@@ -1,6 +1,18 @@
-const API_BASE = "http://localhost:8000";
+const DEFAULT_API_BASE = "https://ipcv-final.onrender.com";
+
+async function getApiBase() {
+  const settings = await chrome.storage.sync.get(["backendUrl"]);
+  const value = settings.backendUrl || DEFAULT_API_BASE;
+  return value.replace(/\/$/, "");
+}
 
 chrome.runtime.onInstalled.addListener(() => {
+  chrome.storage.sync.get(["backendUrl"], (settings) => {
+    if (!settings.backendUrl) {
+      chrome.storage.sync.set({ backendUrl: DEFAULT_API_BASE });
+    }
+  });
+
   chrome.contextMenus.create({
     id: "analyze-deepfake",
     title: "Analyze for Deepfake",
@@ -16,16 +28,17 @@ async function fetchAsFile(url) {
 }
 
 async function analyzeUrl(srcUrl) {
+  const apiBase = await getApiBase();
   const file = await fetchAsFile(srcUrl);
   const form = new FormData();
   form.append("file", file);
 
-  const res = await fetch(`${API_BASE}/analyze`, {
+  const res = await fetch(`${apiBase}/analyze?policy_profile=social`, {
     method: "POST",
     body: form,
   });
   if (!res.ok) {
-    throw new Error(`Analysis failed with status ${res.status}`);
+    throw new Error(`Backend request failed (${res.status}). Check extension backend URL in Options.`);
   }
   return res.json();
 }
@@ -46,7 +59,7 @@ chrome.contextMenus.onClicked.addListener(async (info, tab) => {
   } catch (err) {
     chrome.tabs.sendMessage(tab.id, {
       type: "AUTHLAB_ERROR",
-      payload: { message: err.message || "Analysis failed" },
+      payload: { message: err.message || "Analysis failed. Open extension options and verify backend URL." },
     });
   }
 });
