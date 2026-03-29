@@ -6,7 +6,7 @@
   "rewrites": [
     {
       "source": "/api/(.*)",
-      "destination": "https://YOUR_RENDER_BACKEND_URL/$1"
+      "destination": "https://ipcv-final.onrender.com/$1"
     }
   ]
 }
